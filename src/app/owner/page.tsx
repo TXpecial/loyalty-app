@@ -25,6 +25,8 @@ export default function OwnerPage() {
     }[]
   >([]);
   const [ownerId, setOwnerId] = useState<string | null>(null);
+  const [hasCameraPermission, setHasCameraPermission] = useState(false);
+  const [scannerError, setScannerError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadOwner = async () => {
@@ -47,6 +49,7 @@ export default function OwnerPage() {
       {
         fps: 10,
         qrbox: 250,
+        rememberLastUsedCamera: true,
       },
       false,
     );
@@ -117,9 +120,37 @@ export default function OwnerPage() {
   }, []);
 
   const handleStartScanning = () => {
+    if (!hasCameraPermission) {
+      setScannerError(
+        'Πρέπει πρώτα να πατήσετε "Ενεργοποίηση Κάμερας" και να δώσετε άδεια πρόσβασης.',
+      );
+      return;
+    }
+
+    setScannerError(null);
     setGiftText("");
     setScannedCustomerId(null);
     setIsScanning(true);
+  };
+
+  const handleEnableCamera = async () => {
+    if (typeof navigator === "undefined" || !navigator.mediaDevices) {
+      setScannerError(
+        "Η κάμερα δεν είναι διαθέσιμη σε αυτή τη συσκευή ή τον browser.",
+      );
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      stream.getTracks().forEach((track) => track.stop());
+      setHasCameraPermission(true);
+      setScannerError(null);
+    } catch (err) {
+      setScannerError(
+        "Δεν δόθηκε άδεια πρόσβασης στην κάμερα. Ελέγξτε τα permissions του browser.",
+      );
+    }
   };
 
   const handleSendGift = async () => {
@@ -181,20 +212,30 @@ export default function OwnerPage() {
                 Πώς λειτουργεί το Scanner;
               </p>
               <p className="mt-1 text-[11px] text-slate-400">
-                Πατήστε &quot;Έναρξη Σκαναρίσματος&quot;, επιτρέψτε την
-                πρόσβαση στην κάμερα, στοχεύστε το QR του πελάτη και θα
-                εμφανιστεί παράθυρο με τα στοιχεία του.
+                Πατήστε πρώτα &quot;Ενεργοποίηση Κάμερας&quot; για να δώσετε
+                άδεια και στη συνέχεια &quot;Έναρξη Σκαναρίσματος&quot; για να
+                σκανάρετε το QR του πελάτη.
               </p>
             </div>
 
-            <button
-              type="button"
-              onClick={handleStartScanning}
-              disabled={isScanning}
-              className="mt-6 inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500 px-6 py-2.5 text-sm font-semibold text-slate-950 shadow-md shadow-emerald-500/40 transition hover:-translate-y-0.5 hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              {isScanning ? "Σκανάρει..." : "Έναρξη Σκαναρίσματος"}
-            </button>
+            <div className="mt-4 flex gap-3">
+              <button
+                type="button"
+                onClick={handleEnableCamera}
+                className="inline-flex items-center justify-center rounded-full border border-emerald-500/60 bg-black/40 px-4 py-2 text-xs font-semibold text-emerald-300 shadow-sm shadow-emerald-500/30 transition hover:border-emerald-400 hover:bg-slate-900"
+              >
+                Ενεργοποίηση Κάμερας
+              </button>
+
+              <button
+                type="button"
+                onClick={handleStartScanning}
+                disabled={isScanning}
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500 px-6 py-2.5 text-sm font-semibold text-slate-950 shadow-md shadow-emerald-500/40 transition hover:-translate-y-0.5 hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {isScanning ? "Σκανάρει..." : "Έναρξη Σκαναρίσματος"}
+              </button>
+            </div>
           </section>
 
           <section className="space-y-3">
@@ -218,6 +259,9 @@ export default function OwnerPage() {
               Συνίσταται χρήση από συσκευή με κάμερα (κινητό ή tablet) και
               καλό φωτισμό στον χώρο.
             </p>
+            {scannerError && (
+              <p className="text-[11px] text-rose-400">{scannerError}</p>
+            )}
           </section>
 
           <section className="space-y-3 md:col-span-2">
