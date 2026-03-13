@@ -244,21 +244,55 @@ export default function CustomerPage() {
           </section>
 
           <section className="flex flex-col items-center justify-center gap-4">
-            <div className="rounded-3xl border border-emerald-500/40 bg-black/70 p-5 shadow-lg shadow-emerald-500/30">
-              <div className="rounded-2xl bg-white p-4">
+            <div className="w-full max-w-xs rounded-[28px] bg-gradient-to-br from-emerald-500/15 via-slate-900 to-slate-950 p-3 shadow-[0_18px_40px_rgba(0,0,0,0.65)] ring-1 ring-emerald-500/40 backdrop-blur-md">
+              <div className="relative overflow-hidden rounded-3xl bg-slate-950/80 p-4">
+                <div className="pointer-events-none absolute -right-8 -top-10 h-32 w-32 rounded-full bg-emerald-500/10 blur-2xl" />
+                <header className="mb-4 flex items-center justify-between gap-3">
+                  <div className="flex flex-col">
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-300">
+                      Loyalty Digital Card
+                    </span>
+                    <span className="mt-1 text-sm font-medium text-slate-50">
+                      {userEmail ?? "Πελάτης Loyalty"}
+                    </span>
+                  </div>
+                  <div className="flex h-8 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400/90 to-cyan-400/90 text-[10px] font-semibold text-slate-950 shadow-md shadow-emerald-500/40">
+                    QR PASS
+                  </div>
+                </header>
+
+                <div className="rounded-2xl bg-white/95 p-3 shadow-inner shadow-slate-400/40">
                   {userId && (
                     <QRCodeSVG
                       value={`LOYALTY:${userId}`}
-                      size={196}
+                      size={184}
                       level="M"
                       includeMargin
                     />
                   )}
+                </div>
+
+                <footer className="mt-4 flex items-center justify-between gap-3 text-[11px] text-slate-300">
+                  <div className="flex flex-col">
+                    <span className="font-medium text-slate-100">
+                      QR Κάρτα Επιβράβευσης
+                    </span>
+                    <span className="mt-0.5 text-[10px] text-slate-400">
+                      Δείξτε την κάρτα στο ταμείο σε κάθε επίσκεψη.
+                    </span>
+                  </div>
+                  <div className="flex flex-col items-end text-[10px] text-emerald-300/80">
+                    <span className="uppercase tracking-[0.16em]">Status</span>
+                    <span className="mt-0.5 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[9px] font-semibold text-emerald-300 ring-1 ring-emerald-500/40">
+                      Ενεργή
+                    </span>
+                  </div>
+                </footer>
               </div>
             </div>
             <p className="max-w-xs text-center text-xs text-slate-400">
-              Σκανάρετε αυτό το QR στο κατάστημα για να καταχωρηθεί η επίσκεψη
-              ή η αγορά σας.
+              Σκανάρετε αυτή την ψηφιακή κάρτα στο κατάστημα για να
+              καταχωρηθεί η επίσκεψη ή η αγορά σας.
             </p>
           </section>
         </div>
